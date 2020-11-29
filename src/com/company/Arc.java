@@ -1,6 +1,7 @@
 package com.company;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Arc  implements ArcDrawer {
@@ -11,31 +12,12 @@ public class Arc  implements ArcDrawer {
     }
 
 
-
-    public void drawArc(ScreenPoint p, int width, int heght, int startAngle, int arcAngle) {
-        double pi =3.1415926535;
-        int x;
-        int y;
-        double r;
-        for (double i = startAngle;i<=arcAngle;i=i+0.001){
-            r=(width*heght)/Math.sqrt(heght*heght*Math.cos(i*pi/180)*Math.cos(i*pi/180)+width*width*Math.sin(i*pi/180)*Math.sin(i*pi/180));
-            x= p.getX()+(int)(Math.cos(i*pi/180)*r);
-            y=p.getY()+(int)(Math.sin(i*pi/180)*r);
-            pd.drawPixel(x,y,Color.RED);
-        }
-    }
-
-    public void drawEllipse(int width,int heght,ScreenPoint p1){
-        int x;
-        int y;
-        double rad;
-        double pi =3.1415926535;
-        for(int i=-heght;i<heght;i++){
-            rad= (width * heght) / Math.sqrt(heght * heght * Math.cos(i * pi / 180) * Math.cos(i * pi / 180) + width * width * Math.sin(i * pi / 180) * Math.sin(i * pi / 180));
-            DDALineDrawer line = new DDALineDrawer(pd);
-            line.drawLine(new ScreenPoint(i+p1.getX(),(int)(-Math.sqrt(rad*rad-i*i))+p1.getY()),new ScreenPoint(i+p1.getX(),(int)(Math.sqrt(rad*rad-i*i))+p1.getY()));
-
-        }
+    public BufferedImage drawArc(BufferedImage bi,ScreenConverter sc,RealPoint center, double width, double heght, int startAngle, int arcAngle){
+        ScreenPoint p1=sc.r2s(new RealPoint(center.getX()-width/2,center.getY()+width/2));
+        Graphics g = bi.getGraphics();
+        g.setColor(Color.RED);
+        g.fillArc(p1.getX(), p1.getY(), (int)(2*width/2),(int)(2*width/2),0,360);
+        return bi;
     }
 
 }

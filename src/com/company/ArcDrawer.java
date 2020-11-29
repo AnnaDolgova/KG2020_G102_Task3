@@ -1,8 +1,9 @@
 package com.company;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public interface ArcDrawer {
-    void drawArc(ScreenPoint p,int width,int heght,int startAngle,int arcAngle);
+    BufferedImage drawArc(BufferedImage bi,ScreenConverter sc,RealPoint center, double width, double heght, int startAngle, int arcAngle);
 
 }

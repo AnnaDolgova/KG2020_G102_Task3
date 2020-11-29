@@ -11,11 +11,9 @@ import java.util.ArrayList;
 
 public class DrawPanel extends JPanel implements MouseListener, MouseMotionListener {
 
-    private ScreenConverter sc = new ScreenConverter(-400, 400, 800, 800, 800, 800);
+    private ScreenConverter sc = new ScreenConverter(-300, 300, 600, 600, 600, 600);
 
-    private int rad1=50;
-    private int rad2=100;
-    public int num;
+    private Sun sun = new Sun();
     JTextField field = new JTextField("50");
 
     public DrawPanel() {
@@ -28,6 +26,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
     @Override
     public void paint(Graphics g) {
 
+        this.setLayout(new FlowLayout());
         sc.setsW(getWidth());
         sc.setsH(getHeight());
         BufferedImage bi = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -36,18 +35,14 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
         gr.fillRect(0, 0, getWidth(), getHeight());
         gr.dispose();
         PixelDrawer pd = new BuffereImagePixelDrawer(bi);
+
         field.setPreferredSize(new Dimension(200, 70));
         field.setForeground(Color.BLACK);
 
 
-        num= Integer.parseInt(field.getText());
-        Arc cr = new Arc(pd);
-        
-        Ray rays = new Ray(pd);
-        rays.drawRays(sc.r2s(new RealPoint(0,0)),num,rad1,rad2);
-        cr.drawEllipse(rad1,rad1,sc.r2s(new RealPoint(0,0)));
-
-        cr.drawArc(sc.r2s(new RealPoint(0,0)),rad1,rad1,0,360);
+        sun.setCount(Integer.parseInt(field.getText()));
+        sun.setCount(Integer.parseInt(field.getText()));
+        sun.drawSun(new DDALineDrawer(pd),sc,new Arc(pd),bi);
 
         g.drawImage(bi, 0, 0, null);
         this.add(field);
@@ -84,30 +79,44 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         RealPoint newPoint = sc.s2r(new ScreenPoint(mouseEvent.getX(), mouseEvent.getY()));
+
         double dx = newPoint.getX() - oldPoint.getX();
+
         double dy = newPoint.getY() - oldPoint.getY();
+
         double x= oldPoint.getX();
+
         double y= oldPoint.getY();
+
         ScreenPoint center = new ScreenPoint(0,0);
+
         double count = Math.sqrt(Math.pow(center.getX()-oldPoint.getX(),2)+Math.pow(center.getY()-oldPoint.getY(),2));
+
         double length=Math.sqrt(dx*dx+dy*dy);
+
         if (oldPoint != null){
 
 
-            if (count<=rad1){
-                if((length*10)>20){
+            if (count<=sun.getRad1()){
 
-                    rad2=rad2-rad1;
-                    rad1=(int)(length*10);
-                    rad2=rad1+rad2;
+                if((length)>20){
+
+                    sun.setRad2(sun.getRad2()-sun.getRad1());
+
+                    sun.setRad1(length);
+
+                    sun.setRad2(sun.getRad1()+sun.getRad2());
+
                 }
-                else rad1=20;
+                else sun.setRad1(20);//rad1=20;
             }
-            else if (count<=rad2 && count>rad1){
-                if((length*10)>50 && rad2>rad1+30) rad2=(int)(length*10)+rad1;
-                else rad2=rad1+50;
+
+            else if (count<=sun.getRad2() && count>sun.getRad1()){
+                if((length)>50 && sun.getRad2()>sun.getRad1()) sun.setRad2(length+sun.getRad1());
+                else sun.setRad2(sun.getRad1()+50);
 
             }
+
             else {
                 sc.setrX(sc.getrX() - dx);
                 sc.setrY(sc.getrY() - dy);
